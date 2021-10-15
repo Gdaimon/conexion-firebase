@@ -1,10 +1,22 @@
+import { useState } from 'react';
 import './App.css';
 import { actualizarDocumentoDatabase, consultarDatabase, consultarDocumentoDatabase, crearUsuario, datosUsuario, eliminarDocumentoDatabase, guardarDatabase, loginUsuario, logOutUsuario, usuario } from './config/firebase';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
+import { ListaProductos } from './components/ListaProductos';
+import { Producto } from './components/Producto';
+
 
 function App() {
 
+  const [listaProductos, setListaProductos] = useState([])
+
   const handleClick = async () => {
-    console.log('Entro');
+    // console.log('Entro');
 
     // const usuario = {
     //   nombre: 'Pedro',
@@ -24,10 +36,10 @@ function App() {
     // Obtener un documento id=CEqaCqjBFnI0SQKRj0tI
     // consultarDocumentoDatabase('usuarios', 'CEqaCqjBFnI0SQKRj0tI')
 
-    const usuarioDos = {
-      nombre: 'Martha',
-      edad: 15
-    }
+    // const usuarioDos = {
+    //   nombre: 'Martha',
+    //   edad: 15
+    // }
 
     // Actualizacion documento  id=CEqaCqjBFnI0SQKRj0tI
     // actualizarDocumentoDatabase('usuarios', 'CEqaCqjBFnI0SQKRj0tI', usuarioDos)
@@ -40,7 +52,7 @@ function App() {
 
     // Login
     // await loginUsuario('darkklitos@gmail.com', '123456')
-    console.log('datos usuario: ', usuario);
+    // console.log('datos usuario: ', usuario);
 
     //  salir -> LogOut
     // logOutUsuario()
@@ -51,6 +63,50 @@ function App() {
 
   }
 
+
+
+  const handleGuardarDatos = async () => {
+    // lista-productos
+    const listaProductos = [
+      {
+        descripcion: 'Fuente de corriente',
+        cantidad: 12,
+        precioUnitario: 44000
+      },
+      {
+        descripcion: 'Audifonos',
+        cantidad: 8,
+        precioUnitario: 65000
+      },
+      {
+        descripcion: 'Parlantes',
+        cantidad: 29,
+        precioUnitario: 17000
+      },
+      {
+        descripcion: 'Mouse',
+        cantidad: 95,
+        precioUnitario: 19500
+      },
+      {
+        descripcion: 'Teclados',
+        cantidad: 88,
+        precioUnitario: 22000
+      }
+    ]
+
+    listaProductos.forEach((producto) => guardarDatabase('lista-productos', producto))
+
+  }
+
+
+  const handleCargarDatos = async () => {
+    const listaTemporal = await consultarDatabase('lista-productos')
+    console.log(listaTemporal);
+    setListaProductos(listaTemporal)
+  }
+
+
   return (
     <div className="App container mt-5">
       <h1>Integracion Firebase v9.1.2</h1>
@@ -59,6 +115,39 @@ function App() {
         onClick={handleClick}
         className="btn btn-outline-success"
       >Click</button>
+      <button
+        onClick={handleGuardarDatos}
+        className="btn btn-outline-info"
+      >Guardar Datos</button>
+      <button
+        onClick={handleCargarDatos}
+        className="btn btn-outline-primary"
+      >Cargar Datos</button>
+      <hr />
+
+      <Router>
+
+        <Switch>
+
+          {/* <Route to="/productos/:id">
+            <Producto />
+          </Route> */}
+
+          <Route to="/productos">
+            <ListaProductos />
+          </Route>
+
+          <Route to="/" exact>
+
+          </Route>
+
+
+        </Switch>
+
+
+
+      </Router>
+
     </div>
   );
 }
